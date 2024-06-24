@@ -3,14 +3,11 @@ const actorController = require("../controllers/actorController");
 
 const router = express.Router();
 
-// router.get("/actor", actorController.actorView);
-// router.post("/actor", actorController.actorCreate);
-
 router
 	.route("/actor")
-	.get(actorController.actorView)
-	.post(actorController.actorCreate);
+	.get(actorController.getSingle)
+	.post(actorController.createSingle);
 
-router.route("/actor/:id").get(actorController.actorViewById);
+router.route("/actor/:id").get(actorController.getSingleById);
 
 module.exports = router;

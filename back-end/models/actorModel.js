@@ -2,6 +2,7 @@
 // 	name: "Actor Name",
 // 	posterUrl: "images/640x360.png",
 // 	posterAlt: "poster",
+
 // 	characters: [],
 // };
 
@@ -21,10 +22,6 @@ const Actor = sequelize.define("actors", {
 		type: DataTypes.STRING,
 	},
 	posterAlt: {
-		type: DataTypes.STRING,
-	},
-
-	characters: {
 		type: DataTypes.STRING,
 	},
 });

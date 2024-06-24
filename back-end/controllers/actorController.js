@@ -1,53 +1,35 @@
 const Actor = require("../models/actorModel");
+const { jsonSuccess, jsonCreated, jsonError } = require("./functions");
 
 module.exports = {
-	// get one actor by name
-	actorView: async (req, res) => {
+	// get one by name
+	getSingle: async (req, res) => {
 		const { name } = req.body;
 
-		const actor = await Actor.findOne({ where: { name } });
+		const data = await Actor.findOne({ where: { name } });
 
-		if (actor) {
-			res.status(200).json({
-				error: false,
-				message: "Success view from server!",
-				data: actor,
-			});
-		} else {
-			res.status(400).json({
-				error: true,
-				message: `Error: actor with name ${name} does not exist`,
-			});
-		}
+		data
+			? jsonSuccess(res, data)
+			: jsonError(res, `Error: actor with name ${name} does not exist`);
 	},
 
-	// get one actor by id
-	actorViewById: async (req, res) => {
-		const actor = await Actor.findByPk(req.params.id);
-		res.status(200).json({
-			error: false,
-			message: `Actor with id ${req.params.id} is fetched`,
-			result: actor,
-		});
+	// get one by id
+	getSingleById: async (req, res) => {
+		const { id } = req.params;
+		const data = await Actor.findByPk(id);
+
+		data
+			? jsonSuccess(res, data)
+			: jsonError(res, `Error: actor with id ${id} does not exist`);
 	},
 
-	// create one new actor
-	actorCreate: async (req, res) => {
+	// create one new
+	createSingle: async (req, res) => {
 		const { name } = req.body;
+		const data = await Actor.create({ name });
 
-		const actor = await Actor.create({ name });
-
-		if (actor) {
-			res.status(201).json({
-				error: false,
-				message: "Actor created",
-				data: actor,
-			});
-		} else {
-			res.status(400).json({
-				error: true,
-				message: `Error: creating actor with name ${name}`,
-			});
-		}
+		data
+			? jsonCreated(res, data)
+			: jsonError(res, `Error: creating actor with name ${name}`);
 	},
 };
