@@ -8,10 +8,13 @@ router
 	.route("/media")
 	.post(mediaController.post)
 	.get(mediaController.get)
-	.put(mediaController.put);
-// 	.delete(mediaController.delete);
-router.route("/media/:id").get(mediaController.get).put(mediaController.put);
-// 	.delete(mediaController.delete);
+	.put(mediaController.put)
+	.delete(mediaController.delete);
+router
+	.route("/media/:id")
+	.get(mediaController.get)
+	.put(mediaController.put)
+	.delete(mediaController.delete);
 
 // functions
 // router.route("/mediaActorHistory").get(mediaController.getActorHistory);

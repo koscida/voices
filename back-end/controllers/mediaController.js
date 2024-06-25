@@ -11,30 +11,10 @@ const {
 // ////
 // CRUD
 
-// get one
-const readOne = async (req, res) => {};
+// create
+const createSingle = async (body) => await Media.create(body);
 
-// create one new
-const createSingle = async (req, res) => {
-	const { name } = req.body;
-	const data = await Media.create({ name });
-
-	data
-		? jsonCreated(res, data)
-		: jsonError(res, `Error: creating media with name ${name}`);
-};
-
-// update one
-const updateSingle = async (req, res) => {
-	const { name } = req.body;
-
-	const isUpdated = await Media.update(req.body, { where: { name } });
-
-	const data = await Media.findOne({ where: { name } });
-	jsonUpdated(res, data, { isUpdated: Boolean(isUpdated[0]) });
-};
-
-// get
+// read
 const getAll = async () => await Media.findAll();
 const getSingleByName = async (name) =>
 	await Media.findOne({ where: { name } });
@@ -42,13 +22,14 @@ const getSingleById = async (id) => await Media.findByPk(id);
 
 // update
 const updateSingleByName = async (name, body) =>
-	Media.update(body, { where: { name } });
+	await Media.update(body, { where: { name } });
 const updateSingleById = async (id, body) =>
-	Media.update(body, { where: { id } });
+	await Media.update(body, { where: { id } });
 
 // delete
-const deleteSingleById = async (id) => Media.destroy({ where: { id } });
-const deleteSingleByName = async (name) => Media.destroy({ where: { name } });
+const deleteSingleById = async (id) => await Media.destroy({ where: { id } });
+const deleteSingleByName = async (name) =>
+	await Media.destroy({ where: { name } });
 
 // ////
 // Functions
@@ -85,87 +66,109 @@ module.exports = {
 	// get
 	get: async (req, res) => {
 		const { id } = req.params;
-		const { media, name } = req.body;
+		const { name } = req.body;
 
-		// if id or name exists get single, if media exists et multiple, else get all
+		// get
 		const data = id
 			? await getSingleById(id)
 			: name
 			? await getSingleByName(name)
-			: media
-			? await getMultiple(media)
 			: await getAll();
 
-		data ? jsonSuccess(res, data) : jsonErrorDoesNotExist(res, name);
+		// return
+		data ? jsonSuccess(res, data) : jsonErrorDoesNotExist(res, name ?? id);
 		return;
 	},
 
 	// post
 	post: async (req, res) => {
-		const { media } = req.body;
-		(media ?? [req.body]).forEach((m) => {
-			const { name } = m;
-			// get
-			const single = getSingleByName(name);
+		const { id } = req.params;
+		const { name } = req.body;
 
-			// if exists, error
-			if (single) {
-				jsonErrorDup(res, m.name);
-				return;
-			}
+		// get
+		const single = name
+			? await getSingleByName(name)
+			: await getSingleById(id);
 
-			// create
-			const data = createSingle(req, res);
-			data
-				? jsonSuccess(res, data)
-				: jsonError(res, `Error: updating ${name}`);
+		// if exists, error
+		if (single) {
+			jsonErrorDup(res, name ?? id);
 			return;
-		});
+		}
+
+		// create
+		const data = await createSingle(req.body);
+
+		// return
+		data
+			? jsonCreated(res, data)
+			: jsonError(res, `Error: creating ${name ?? id}`);
+		return;
 	},
 
 	// put
 	put: async (req, res) => {
-		const { media } = req.body;
-		(media ?? [req.body]).forEach((m) => {
-			const { name } = m;
-			// get
-			const single = getSingleByName(name);
+		const { id } = req.params;
+		const { name } = req.body;
 
-			// if does not exist, error
-			if (!single) {
-				jsonErrorDoesNotExist(res);
-				return;
-			}
+		// get
+		const single = name
+			? await getSingleByName(name)
+			: await getSingleById(id);
 
-			// update
-			const data = updateSingleByName(name, m);
-			data
-				? jsonSuccess(res, data)
-				: jsonError(res, `Error: updating ${name}`);
+		// if does not exist, error
+		if (!single) {
+			jsonErrorDoesNotExist(res, name ?? id);
 			return;
-		});
+		}
+
+		// update
+		const isUpdated = name
+			? await updateSingleByName(name, req.body)
+			: await updateSingleById(id);
+
+		// if updated get data
+		const data = isUpdated
+			? name
+				? await getSingleByName(name)
+				: await getSingleById(id)
+			: 0;
+
+		// return
+		data
+			? jsonSuccess(res, data)
+			: jsonError(res, `Error: updating ${name ?? id}`);
+		return;
 	},
 
 	// delete
 	delete: async (req, res) => {
-		const { media } = req.body;
-		(media ?? [req.body]).forEach((m) => {
-			const { name } = m;
-			// get
-			const single = getSingleByName(name);
+		const { id } = req.params;
+		const { name } = req.body;
 
-			// if does not exist, error
-			if (!single) {
-				jsonErrorDoesNotExist(res);
-				return;
-			}
+		// get
+		const single = name
+			? await getSingleByName(name)
+			: await getSingleById(id);
 
-			// delete
-			const data = deleteSingleByName(name);
-			data
-				? jsonSuccess(res, data)
-				: jsonError(res, `Error: deleting ${name}`);
+		// if does not exist, error
+		if (!single) {
+			jsonErrorDoesNotExist(name ?? id);
 			return;
-		});
+		}
+
+		// delete
+		const isDeleted = name
+			? await deleteSingleByName(name)
+			: await deleteSingleById(id);
+
+		// if deleted return the last known
+		const data = isDeleted ? single : 0;
+
+		// return
+		data
+			? jsonSuccess(res, data)
+			: jsonError(res, `Error: deleting ${name ?? id}`);
+		return;
 	},
 };

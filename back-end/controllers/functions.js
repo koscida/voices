@@ -1,16 +1,24 @@
 module.exports = {
-	jsonSuccess: (res, data, status = "200", message = "Success") => {
-		res.status(status).json({
+	jsonSuccess: (res, data) => {
+		res.status(200).json({
 			error: false,
-			message,
+			message: "Success",
 			data,
 		});
 	},
 	jsonCreated: (res, data) => {
-		this.jsonSuccess(res, data, 201, "Created");
+		res.status(201).json({
+			error: false,
+			message: "Created",
+			data,
+		});
 	},
 	jsonUpdated: (res, data) => {
-		this.jsonSuccess(res, data, 202, "Updated");
+		res.status(202).json({
+			error: false,
+			message: "Updated",
+			data,
+		});
 	},
 	jsonError: (res, message) => {
 		res.status(400).json({
