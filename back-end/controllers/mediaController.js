@@ -9,29 +9,6 @@ const {
 } = require("./functions");
 
 // ////
-// CRUD
-
-// create
-const createSingle = async (body) => await Media.create(body);
-
-// read
-const getAll = async () => await Media.findAll();
-const getSingleByName = async (name) =>
-	await Media.findOne({ where: { name } });
-const getSingleById = async (id) => await Media.findByPk(id);
-
-// update
-const updateSingleByName = async (name, body) =>
-	await Media.update(body, { where: { name } });
-const updateSingleById = async (id, body) =>
-	await Media.update(body, { where: { id } });
-
-// delete
-const deleteSingleById = async (id) => await Media.destroy({ where: { id } });
-const deleteSingleByName = async (name) =>
-	await Media.destroy({ where: { name } });
-
-// ////
 // Functions
 
 // get single with history
@@ -63,6 +40,29 @@ const getActorHistory = async (req, res) => {
 // Endpoints
 
 module.exports = {
+	// post
+	post: async (req, res) => {
+		const { name } = req.body;
+
+		// get
+		const single = await Media.findOne({ where: { name } });
+
+		// if exists, error
+		if (single) {
+			jsonErrorDup(res, name);
+			return;
+		}
+
+		// create
+		const data = await Media.create(req.body);
+
+		// return
+		data
+			? jsonCreated(res, data)
+			: jsonError(res, `Error: creating ${name}`);
+		return;
+	},
+
 	// get
 	get: async (req, res) => {
 		const { id } = req.params;
@@ -70,39 +70,13 @@ module.exports = {
 
 		// get
 		const data = id
-			? await getSingleById(id)
+			? await Media.findOne({ where: { name } })
 			: name
-			? await getSingleByName(name)
-			: await getAll();
+			? await Media.findOne({ where: { id } })
+			: await Media.findAll();
 
 		// return
 		data ? jsonSuccess(res, data) : jsonErrorDoesNotExist(res, name ?? id);
-		return;
-	},
-
-	// post
-	post: async (req, res) => {
-		const { id } = req.params;
-		const { name } = req.body;
-
-		// get
-		const single = name
-			? await getSingleByName(name)
-			: await getSingleById(id);
-
-		// if exists, error
-		if (single) {
-			jsonErrorDup(res, name ?? id);
-			return;
-		}
-
-		// create
-		const data = await createSingle(req.body);
-
-		// return
-		data
-			? jsonCreated(res, data)
-			: jsonError(res, `Error: creating ${name ?? id}`);
 		return;
 	},
 
@@ -113,8 +87,8 @@ module.exports = {
 
 		// get
 		const single = name
-			? await getSingleByName(name)
-			: await getSingleById(id);
+			? await Media.findOne({ where: { name } })
+			: await Media.findOne({ where: { id } });
 
 		// if does not exist, error
 		if (!single) {
@@ -124,19 +98,19 @@ module.exports = {
 
 		// update
 		const isUpdated = name
-			? await updateSingleByName(name, req.body)
-			: await updateSingleById(id);
+			? Media.findOne({ where: { name } })
+			: Media.findOne({ where: { id } });
 
 		// if updated get data
 		const data = isUpdated
 			? name
-				? await getSingleByName(name)
-				: await getSingleById(id)
+				? await Media.findOne({ where: { name } })
+				: await Media.findOne({ where: { id } })
 			: 0;
 
 		// return
 		data
-			? jsonSuccess(res, data)
+			? jsonUpdated(res, data)
 			: jsonError(res, `Error: updating ${name ?? id}`);
 		return;
 	},
@@ -148,8 +122,8 @@ module.exports = {
 
 		// get
 		const single = name
-			? await getSingleByName(name)
-			: await getSingleById(id);
+			? await Media.findOne({ where: { name } })
+			: await Media.findOne({ where: { id } });
 
 		// if does not exist, error
 		if (!single) {
@@ -159,8 +133,8 @@ module.exports = {
 
 		// delete
 		const isDeleted = name
-			? await deleteSingleByName(name)
-			: await deleteSingleById(id);
+			? await Media.destroy({ where: { name } })
+			: await Media.destroy({ where: { id } });
 
 		// if deleted return the last known
 		const data = isDeleted ? single : 0;
@@ -171,4 +145,9 @@ module.exports = {
 			: jsonError(res, `Error: deleting ${name ?? id}`);
 		return;
 	},
+
+	// functions
+
+	// mediaActorHistory
+	mediaActorHistory: async (req, res) => {},
 };

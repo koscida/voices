@@ -6,4 +6,6 @@ const router = express.Router();
 router.get("/", authController.homeView);
 router.get("/api", authController.homeView);
 
+router.get("/run", authController.runView);
+
 module.exports = router;

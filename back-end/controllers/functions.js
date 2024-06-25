@@ -29,13 +29,13 @@ module.exports = {
 	jsonErrorDup: (res, key) => {
 		res.status(400).json({
 			error: true,
-			message: `Error: duplicate on ${key}`,
+			message: `Error: duplicate ${key}`,
 		});
 	},
 	jsonErrorDoesNotExist: (res, key) => {
 		res.status(400).json({
 			error: true,
-			message: `Error: media does not exist ${key}`,
+			message: `Error: does not exist ${key}`,
 		});
 	},
 };

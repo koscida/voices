@@ -1,13 +1,10 @@
 const express = require("express");
 const actorController = require("../controllers/actorController");
+const { createCRUDRoutes } = require("./routerHelper");
 
-const router = express.Router();
+let router = express.Router();
 
-router
-	.route("/actor")
-	.get(actorController.getSingle)
-	.post(actorController.createSingle);
-
-router.route("/actor/:id").get(actorController.getSingleById);
+// crud
+router = createCRUDRoutes(router, "actor", actorController);
 
 module.exports = router;

@@ -1,22 +1,12 @@
 const express = require("express");
 const mediaController = require("../controllers/mediaController");
+const { createCRUDRoutes } = require("./routerHelper");
 
-const router = express.Router();
+let router = express.Router();
 
-// crud
-router
-	.route("/media")
-	.post(mediaController.post)
-	.get(mediaController.get)
-	.put(mediaController.put)
-	.delete(mediaController.delete);
-router
-	.route("/media/:id")
-	.get(mediaController.get)
-	.put(mediaController.put)
-	.delete(mediaController.delete);
+router = createCRUDRoutes(router, "media", mediaController);
 
 // functions
-// router.route("/mediaActorHistory").get(mediaController.getActorHistory);
+router.route("/mediaActorHistory").get(mediaController.mediaActorHistory);
 
 module.exports = router;

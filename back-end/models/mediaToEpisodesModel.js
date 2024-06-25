@@ -1,13 +1,12 @@
-// const mediaToCharactersModel = {
+// const mediaToEpisodesModel = {
 // 	mediaId: 1,
-//	characterId: 1,
-//  totalEpisodes: 1,
+//	episodeId: 1,
 // };
 
 const { DataTypes } = require("sequelize");
 const { sequelize } = require("../server/db");
 
-const MediaToCharacter = sequelize.define("mediaToCharacters", {
+const MediaToEpisode = sequelize.define("mediaToEpisodes", {
 	id: {
 		type: DataTypes.INTEGER,
 		autoIncrement: true,
@@ -16,12 +15,9 @@ const MediaToCharacter = sequelize.define("mediaToCharacters", {
 	mediaId: {
 		type: DataTypes.INTEGER,
 	},
-	characterId: {
-		type: DataTypes.INTEGER,
-	},
-	totalEpisodes: {
+	episodeId: {
 		type: DataTypes.INTEGER,
 	},
 });
 
-module.exports = MediaToCharacter;
+module.exports = MediaToEpisode;
