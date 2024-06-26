@@ -1,12 +1,12 @@
 const express = require("express");
 const mediaController = require("../controllers/mediaController");
-const { createCRUDRoutes } = require("./routerHelper");
+const baseRoutes = require("./baseRoutes");
 
-let router = express.Router();
+const endpoint = "/media";
 
-router = createCRUDRoutes(router, "media", mediaController);
-
-// functions
-router.route("/mediaActorHistory").get(mediaController.mediaActorHistory);
-
-module.exports = router;
+module.exports = {
+	addRoutes: (router) => {
+		baseRoutes.addCRUDRoutes(router, endpoint, mediaController);
+		baseRoutes.addCRUDRoutesId(router, endpoint, mediaController);
+	},
+};

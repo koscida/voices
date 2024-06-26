@@ -1,11 +1,11 @@
 const express = require("express");
 const authController = require("../controllers/authController");
 
-const router = express.Router();
+module.exports = {
+	addRoutes: (router) => {
+		router.get("/", authController.homeView);
+		router.get("/api", authController.homeView);
 
-router.get("/", authController.homeView);
-router.get("/api", authController.homeView);
-
-router.get("/run", authController.runView);
-
-module.exports = router;
+		router.get("/run", authController.runView);
+	},
+};

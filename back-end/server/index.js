@@ -3,9 +3,7 @@
 const express = require("express");
 require("express-async-errors");
 require("colors");
-const authRoutes = require("../routes/authRoutes.js");
-const mediaRoutes = require("../routes/mediaRoutes.js");
-const actorRoutes = require("../routes/actorRoutes.js");
+const allRoutes = require("../routes/allRoutes.js");
 const { connectDB } = require("./db.js");
 const cors = require("cors");
 
@@ -22,9 +20,7 @@ app.use(express.json());
 app.use(cors());
 
 // using router
-app.use("/", authRoutes);
-app.use("/", mediaRoutes);
-app.use("/", actorRoutes);
+app.use("/", allRoutes);
 
 // app.get("/puppeteer", express.static("../puppeteer/react-crawler.js"));
 

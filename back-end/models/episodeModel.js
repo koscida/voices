@@ -15,13 +15,16 @@ const Episode = sequelize.define("episodes", {
 		autoIncrement: true,
 		primaryKey: true,
 	},
+	mediaId: {
+		type: DataTypes.INTEGER,
+	},
 	name: {
 		type: DataTypes.STRING,
 	},
-	season: {
+	year: {
 		type: DataTypes.INTEGER,
 	},
-	episode: {
+	season: {
 		type: DataTypes.INTEGER,
 	},
 });
