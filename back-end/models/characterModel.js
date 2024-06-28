@@ -25,11 +25,11 @@ const Character = sequelize.define("characters", {
 		type: DataTypes.STRING,
 	},
 
-	media: {
-		type: DataTypes.STRING,
+	mediaId: {
+		type: DataTypes.INTEGER,
 	},
-	actors: {
-		type: DataTypes.STRING,
+	totalEpisodes: {
+		type: DataTypes.INTEGER,
 	},
 });
 

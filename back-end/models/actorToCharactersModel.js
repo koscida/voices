@@ -1,6 +1,7 @@
 // const actorToCharactersModel = {
 // 	actorId: 1,
 //	characterId: 1,
+//  episodes: 1,
 // };
 
 const { DataTypes } = require("sequelize");
@@ -16,6 +17,9 @@ const ActorToCharacter = sequelize.define("actorToCharacters", {
 		type: DataTypes.INTEGER,
 	},
 	characterId: {
+		type: DataTypes.INTEGER,
+	},
+	totalEpisodes: {
 		type: DataTypes.INTEGER,
 	},
 });

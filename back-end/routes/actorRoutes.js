@@ -2,6 +2,7 @@ const express = require("express");
 const actorController = require("../controllers/actorController");
 const baseRoutes = require("./baseRoutes");
 
+// actor endpoint
 const endpoint = "/actor";
 
 module.exports = {

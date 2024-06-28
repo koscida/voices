@@ -6,6 +6,8 @@ module.exports = {
 		router.get("/", authController.homeView);
 		router.get("/api", authController.homeView);
 
+		router.get("/nuke", authController.nukeView);
+		router.get("/clear", authController.clearView);
 		router.get("/run", authController.runView);
 	},
 };

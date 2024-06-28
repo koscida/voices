@@ -8,7 +8,7 @@
 const { DataTypes } = require("sequelize");
 const { sequelize } = require("../server/db");
 
-const Media = sequelize.define("medias", {
+const Media = sequelize.define("media", {
 	id: {
 		type: DataTypes.INTEGER,
 		autoIncrement: true,
@@ -21,10 +21,6 @@ const Media = sequelize.define("medias", {
 		type: DataTypes.STRING,
 	},
 	posterAlt: {
-		type: DataTypes.STRING,
-	},
-
-	characters: {
 		type: DataTypes.STRING,
 	},
 });
