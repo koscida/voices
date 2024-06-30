@@ -1,6 +1,6 @@
 const express = require("express");
-const episodeController = require("../controllers/episodeController");
-const baseRoutes = require("./baseRoutes");
+const episodeController = require("../controllers/episode.controller");
+const baseRoutes = require("./base.routes");
 
 // episode endpoint
 const endpoint = "/media/:mediaId/episode";

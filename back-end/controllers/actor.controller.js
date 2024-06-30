@@ -1,4 +1,4 @@
-const Actor = require("../models/actorModel");
+const { Actor } = require("../models/models");
 const {
 	jsonSuccess,
 	jsonCreated,
@@ -7,7 +7,7 @@ const {
 	jsonErrorDup,
 	jsonErrorDoesNotExist,
 } = require("./functions");
-const baseController = require("./baseController");
+const baseController = require("./base.controller");
 
 module.exports = {
 	// post

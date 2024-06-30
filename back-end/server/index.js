@@ -3,7 +3,7 @@
 const express = require("express");
 require("express-async-errors");
 require("colors");
-const allRoutes = require("../routes/allRoutes.js");
+const allRoutes = require("../routes/all.routes.js");
 const { connectDB } = require("./db.js");
 const cors = require("cors");
 
@@ -13,10 +13,10 @@ const app = express();
 //connection to DB
 connectDB();
 
-// Parse request
+// parse request
 app.use(express.json());
 
-// using middlewares
+// using cors
 app.use(cors());
 
 // using router

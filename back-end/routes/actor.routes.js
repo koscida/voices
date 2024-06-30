@@ -1,6 +1,6 @@
 const express = require("express");
-const actorController = require("../controllers/actorController");
-const baseRoutes = require("./baseRoutes");
+const actorController = require("../controllers/actor.controller");
+const baseRoutes = require("./base.routes");
 
 // actor endpoint
 const endpoint = "/actor";

@@ -44,7 +44,7 @@ module.exports = {
 			? await Model.findOne({ where: { name } })
 			: name
 			? await Model.findOne({ where: { id } })
-			: await Model.findAll();
+			: await Model.findAll({ order: [["name", "ASC"]] });
 
 		// return
 		data ? jsonSuccess(res, data) : jsonErrorDoesNotExist(res, name ?? id);
