@@ -1,4 +1,4 @@
-const { Character } = require("../models/models");
+const { Character, Actor, ActorToCharacter } = require("../models/models");
 const {
 	jsonSuccess,
 	jsonCreated,
@@ -28,5 +28,69 @@ module.exports = {
 	// delete
 	delete: async (req, res) => {
 		baseController.delete(Character, req, res);
+	},
+
+	// ////
+	// functions
+
+	// actors with character
+	getActors: async (req, res) => {
+		const { characterId } = req.params;
+		console.log("characterId: ", characterId);
+
+		// get character
+		const character = await Character.findOne({
+			where: { id: characterId },
+		});
+		// error if does not exist
+		if (!character) {
+			jsonErrorDoesNotExist(res, characterId);
+			return;
+		}
+
+		// get actors
+		const data = await Actor.findAll({
+			include: [
+				{
+					model: ActorToCharacter,
+					where: { CharacterId: characterId },
+				},
+			],
+			order: [["actorName", "ASC"]],
+		});
+
+		// return
+		data
+			? jsonSuccess(res, data)
+			: jsonError(res, `Error in getActors ${characterId}`);
+		return;
+	},
+
+	// media with character
+	getMedia: async (req, res) => {
+		const { characterId } = req.params;
+		console.log("characterId: ", characterId);
+
+		// get character
+		const character = await Character.findOne({
+			where: { id: characterId },
+		});
+		// error if does not exist
+		if (!character) {
+			jsonErrorDoesNotExist(res, characterId);
+			return;
+		}
+
+		// get media
+		const data = await Media.findOne({
+			where: { characterId },
+			order: [["actorName", "ASC"]],
+		});
+
+		// return
+		data
+			? jsonSuccess(res, data)
+			: jsonError(res, `Error in getActors ${characterId}`);
+		return;
 	},
 };

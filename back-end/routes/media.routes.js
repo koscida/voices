@@ -11,7 +11,10 @@ module.exports = {
 		baseRoutes.addCRUDRoutesId(router, endpoint, mediaController);
 
 		router
+			.route(`${endpoint}/:mediaId/characters`)
+			.get(mediaController.getCharacters);
+		router
 			.route(`${endpoint}/:mediaId/actors`)
-			.get(mediaController.getActors);
+			.get(mediaController.getCharactersActors);
 	},
 };

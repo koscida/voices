@@ -1,4 +1,4 @@
-const { Actor } = require("../models/models");
+const { Actor, Character, ActorToCharacter } = require("../models/models");
 const {
 	jsonSuccess,
 	jsonCreated,
@@ -28,5 +28,41 @@ module.exports = {
 	// delete
 	delete: async (req, res) => {
 		baseController.delete(Actor, req, res);
+	},
+
+	// ////
+	// functions
+
+	// actors with character
+	getCharacters: async (req, res) => {
+		const { actorId } = req.params;
+		console.log("actorId: ", actorId);
+
+		// get actor
+		const actor = await Actor.findOne({
+			where: { id: actorId },
+		});
+		// error if does not exist
+		if (!actor) {
+			jsonErrorDoesNotExist(res, actorId);
+			return;
+		}
+
+		// get characters
+		const data = await Character.findAll({
+			include: [
+				{
+					model: ActorToCharacter,
+					where: { ActorId: actorId },
+				},
+			],
+			order: [["characterName", "ASC"]],
+		});
+
+		// return
+		data
+			? jsonSuccess(res, data)
+			: jsonError(res, `Error in getCharacters ${actorId}`);
+		return;
 	},
 };

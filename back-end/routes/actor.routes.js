@@ -9,5 +9,9 @@ module.exports = {
 	addRoutes: (router) => {
 		baseRoutes.addCRUDRoutes(router, endpoint, actorController);
 		baseRoutes.addCRUDRoutesId(router, endpoint, actorController);
+
+		router
+			.route(`${endpoint}/:actorId/characters`)
+			.get(actorController.getCharacters);
 	},
 };

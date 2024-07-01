@@ -81,16 +81,24 @@ exports.ActorToCharacter = ActorToCharacter;
 Media.hasMany(Character);
 Character.belongsTo(Media);
 
-// A BelongsToMany B through the junction table C
-Character.belongsToMany(Actor, { through: ActorToCharacter });
-Actor.belongsToMany(Character, { through: ActorToCharacter });
+// The Super Many-to-Many relationship
+Character.belongsToMany(Actor, {
+	through: ActorToCharacter,
+});
+Actor.belongsToMany(Character, {
+	through: ActorToCharacter,
+});
+Character.hasMany(ActorToCharacter);
+ActorToCharacter.belongsTo(Character);
+Actor.hasMany(ActorToCharacter);
+ActorToCharacter.belongsTo(Actor);
 
 // sync
-sequelize
-	.sync({ force: true })
-	.then(() => {
-		console.info("Model synchronization completed");
-	})
-	.catch((error) => {
-		console.error("Unable to create table : ", error);
-	});
+// sequelize
+// 	.sync({ force: true })
+// 	.then(() => {
+// 		console.info("Model synchronization completed");
+// 	})
+// 	.catch((error) => {
+// 		console.error("Unable to create table : ", error);
+// 	});
