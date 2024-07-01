@@ -10,12 +10,15 @@ const Media = sequelize.define("Media", {
 	},
 	mediaName: {
 		type: DataTypes.STRING,
+		unique: true,
 	},
 	mediaPosterUrl: {
 		type: DataTypes.STRING,
+		defaultValue: null,
 	},
 	mediaPosterAlt: {
 		type: DataTypes.STRING,
+		defaultValue: null,
 	},
 });
 exports.Media = Media;
@@ -27,14 +30,20 @@ const Character = sequelize.define("Characters", {
 		autoIncrement: true,
 		primaryKey: true,
 	},
+	key: {
+		type: DataTypes.STRING,
+		unique: true,
+	},
 	characterName: {
 		type: DataTypes.STRING,
 	},
 	characterPosterUrl: {
 		type: DataTypes.STRING,
+		defaultValue: null,
 	},
 	characterPosterAlt: {
 		type: DataTypes.STRING,
+		defaultValue: null,
 	},
 
 	mediaId: {
@@ -42,6 +51,7 @@ const Character = sequelize.define("Characters", {
 	},
 	characterTotalEpisodes: {
 		type: DataTypes.INTEGER,
+		defaultValue: null,
 	},
 });
 exports.Character = Character;
@@ -55,12 +65,15 @@ const Actor = sequelize.define("Actors", {
 	},
 	actorName: {
 		type: DataTypes.STRING,
+		unique: true,
 	},
 	actorPosterUrl: {
 		type: DataTypes.STRING,
+		defaultValue: null,
 	},
 	actorPosterAlt: {
 		type: DataTypes.STRING,
+		defaultValue: null,
 	},
 });
 exports.Actor = Actor;
