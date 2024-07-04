@@ -5,6 +5,8 @@ const actorRoutes = require("./actor.routes.js");
 // const episodeRoutes = require("./episode.routes.js");
 const characterRoutes = require("./character.routes.js");
 
+const loadRoutes = require("./load.routes.js");
+
 // create one router for the app
 let router = express.Router();
 
@@ -14,6 +16,8 @@ mediaRoutes.addRoutes(router);
 actorRoutes.addRoutes(router);
 // episodeRoutes.addRoutes(router);
 characterRoutes.addRoutes(router);
+
+loadRoutes.addRoutes(router);
 
 // export
 module.exports = router;

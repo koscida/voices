@@ -247,7 +247,12 @@ const readMediaFile = async (fileName, resolve, reject) => {
 
 			// get episodes and year
 			const episodeYears = episodeYear.split(",").map((c) => c.trim());
-			const episodesTotal = episodeYears[0] ?? 0;
+			const episodesTotal = episodeYears[0]
+				? episodeYears[0]
+						.replace(" ", "")
+						.replace("episode", "")
+						.replace("s", "")
+				: 0;
 			const years =
 				episodeYears.length > 1 && episodeYears[1]
 					? episodeYears[1].split("-").map((c) => c.trim())
