@@ -5,4 +5,7 @@ module.exports = {
 	addRoutes: (router) => {
 		router.get("/load", loadController.loadAll);
 	},
+	addRoutes: (router) => {
+		router.get("/load/:fileName", loadController.loadOne);
+	},
 };

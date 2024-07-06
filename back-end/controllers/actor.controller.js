@@ -12,22 +12,22 @@ const baseController = require("./base.controller");
 module.exports = {
 	// post
 	post: async (req, res) => {
-		baseController.post(Actor, req, res);
+		baseController.post(Actor, "actorName", req, res);
 	},
 
 	// get
 	get: async (req, res) => {
-		baseController.get(Actor, req, res);
+		baseController.get(Actor, "actorName", req, res);
 	},
 
 	// put
 	put: async (req, res) => {
-		baseController.put(Actor, req, res);
+		baseController.put(Actor, "actorName", req, res);
 	},
 
 	// delete
 	delete: async (req, res) => {
-		baseController.delete(Actor, req, res);
+		baseController.delete(Actor, "actorName", req, res);
 	},
 
 	// ////

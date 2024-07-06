@@ -57,119 +57,62 @@ module.exports = {
 			}
 
 			// get all files
-			//files.forEach((fileName) => {
-			["ac_copy.txt"].forEach(async (fileName) => {
+			// files = ["ac_copy.txt"];
+			files.forEach((fileName) => {
 				console.log("------\nfileName: ", fileName);
 
 				// ////
-				// create file promises
+				// create promises
 				const filePromise = new Promise(async (resolve, reject) => {
+					// read media file
 					await readMediaFile(fileName, resolve, reject);
 				});
-				const filePromiseResolve = (filePromiseResult) => {
-					//console.log("result of filePromise: ", filePromiseResult);
-
-					// ////
-					// create media promises
-					const fileMediaPromise = new Promise(
-						async (resolve, reject) => {
-							await processFileMedia(
-								filePromiseResult,
+				filePromise
+					.then((result) => {
+						// create media
+						return new Promise(async (resolve, reject) => {
+							await processMedia(result, resolve, reject);
+						});
+					}, promiseErr)
+					.then((result) => {
+						// create characters
+						return new Promise(async (resolve, reject) => {
+							await processCharacters(result, resolve, reject);
+						});
+					})
+					.then((result) => {
+						// get characters data
+						return new Promise(async (resolve, reject) => {
+							await getCharacterData(result, resolve, reject);
+						});
+					})
+					.then((result) => {
+						// create actors
+						return new Promise(async (resolve, reject) => {
+							await processActors(result, resolve, reject);
+						});
+					})
+					.then((result) => {
+						// get actor data
+						return new Promise(async (resolve, reject) => {
+							await getActorData(result, resolve, reject);
+						});
+					})
+					.then((result) => {
+						// create character to actor connection
+						return new Promise(async (resolve, reject) => {
+							await processActorsToCharacters(
+								result,
 								resolve,
 								reject
 							);
-						}
-					);
-					const fileMediaPromiseResolve = (
-						fileMediaPromiseResult
-					) => {
-						console.log(
-							"result of fileMediaPromise: ",
-							fileMediaPromiseResult
-						);
-						console.log(
-							"fileMediaPromiseResult.data[0]: ",
-							fileMediaPromiseResult.data["Koro-sensei"]
-						);
+						});
+					})
+					.then((result) => {
+						console.log("complete");
 
-						// ////
-						// create character promises
-						const fileCharactersPromise = new Promise(
-							async (resolve, reject) => {
-								// await processFileCharacters(
-								// 	fileMediaPromiseResult,
-								// 	resolve,
-								// 	reject
-								// );
-								await processFileCharactersETC(
-									fileMediaPromiseResult,
-									resolve,
-									reject
-								);
-							}
-						);
-						const fileCharactersPromiseResolve = (
-							fileCharactersPromiseResult
-						) => {
-							console.log(
-								"result of fileCharactersPromise: ",
-								fileCharactersPromiseResult
-							);
-
-							// // ////
-							// // create actor promises
-							// const fileActorsPromise = new Promise(
-							// 	async (resolve, reject) => {
-							// 		await processFileActors(
-							// 			fileCharactersIdsPromiseResult,
-							// 			resolve,
-							// 			reject
-							// 		);
-							// 	}
-							// );
-							// fileActorsPromise.then(
-							// 	fileActorsPromiseResolve,
-							// 	(err) => {
-							// 		console.log(err);
-							// 		return;
-							// 	}
-							// );
-							// const fileActorsPromiseResolve = (
-							// 	fileActorsPromiseResult
-							// ) => {
-							// 	// ////
-							// 	// create actor to character promise
-							// 	const fileActorsToCharactersPromise =
-							// 		new Promise(async (resolve, reject) => {
-							// 			await processFileActorsToCharacters(
-							// 				fileActorsPromiseResult,
-							// 				resolve,
-							// 				reject
-							// 			);
-							// 		});
-							// 	fileActorsToCharactersPromise.then(
-							// 		fileActorsToCharactersPromiseResolve,
-							// 		promiseErr
-							// 	);
-							// 	const fileActorsToCharactersPromiseResolve =
-							// 		(
-							// 			fileActorsToCharactersPromiseResult
-							// 		) => {
-							// 			res.json({ message: "Done!" });
-							// 		};
-							// };
-						};
-						fileCharactersPromise.then(
-							fileCharactersPromiseResolve,
-							promiseErr
-						);
-					};
-					fileMediaPromise.then(fileMediaPromiseResolve, promiseErr);
-				};
-				filePromise.then(filePromiseResolve, promiseErr);
-
-				// process the data
-				//await processFileLines(mediaName, data);
+						return {};
+					});
 			});
 		});
 
@@ -265,11 +208,20 @@ const readMediaFile = async (fileName, resolve, reject) => {
 			characters.forEach((characterName) => {
 				if (characterName) {
 					if (!data[characterName]) data[characterName] = [actorInfo];
-					else
-						data[characterName] = [
-							...data[characterName],
-							actorInfo,
-						];
+					else {
+						const characterActors = data[characterName];
+						// if actor not in character list
+						if (
+							characterActors.filter(
+								(c) => c.actorName === actorName
+							).length === 0
+						) {
+							data[characterName] = [
+								...data[characterName],
+								actorInfo,
+							];
+						}
+					}
 				}
 			});
 		}, {});
@@ -284,7 +236,7 @@ const readMediaFile = async (fileName, resolve, reject) => {
 };
 
 // process the media
-const processFileMedia = async (result, resolve, reject) => {
+const processMedia = async (result, resolve, reject) => {
 	const { mediaName, data } = result;
 
 	// create media
@@ -299,8 +251,9 @@ const processFileMedia = async (result, resolve, reject) => {
 		reject("error creating media");
 	}
 };
+
 // process the characters
-const processFileCharacters = async (result, resolve, reject) => {
+const processCharacters = async (result, resolve, reject) => {
 	const { mediaId, data } = result;
 	let characterPosterUrl,
 		characterPosterAlt = "";
@@ -326,44 +279,12 @@ const processFileCharacters = async (result, resolve, reject) => {
 		.then(async (charactersResult) => {
 			console.log("Characters have been inserted");
 
-			// get character ids
-			const characterIds = {};
-
-			// get character ids in promise
-			const getCharacterIdsPromise = new Promise(
-				async (resolveIds, rejectIds) => {
-					// get character ids
-					const characterIds = {};
-					characterInserts.forEach(async ({ characterName }) => {
-						const char = await Character.findOne({
-							where: { characterName },
-						});
-						characterIds[characterName] = char.id;
-					});
-
-					// return results
-					resolveIds({
-						...result,
-						charactersResult,
-						characterIds,
-					});
-				}
-			);
-			const getCharacterIdsPromiseResolve = (getCharacterIdsResult) =>
-				resolve(getCharacterIdsResult);
-			getCharacterIdsPromise.then(
-				getCharacterIdsPromiseResolve,
-				promiseErr
-			);
-
-			// //
-
-			// // return results
+			// return results
 			// resolve({
 			// 	...result,
 			// 	charactersResult,
-			// 	characterIds,
 			// });
+			resolve(result);
 		})
 		.catch((err) => {
 			console.error("Failed to insert characters", err);
@@ -371,22 +292,31 @@ const processFileCharacters = async (result, resolve, reject) => {
 		});
 };
 // get the character ids
-const getFileCharacterIds = async (result, resolve, reject) => {
-	const { data } = result;
+const getCharacterData = async (result, resolve, reject) => {
+	const { data, mediaId } = result;
+	const characterNames = Object.keys(data);
+	const transaction = await sequelize.transaction();
 
-	// get character ids
-	const characterIds = {};
-	Object.entries(data).forEach(async ([characterName, actors]) => {
-		const character = await Character.findOne({ where: { characterName } });
-		if (character) characterIds[characterName] = character.id;
-	});
+	try {
+		const characterData = {};
+		for (var i = 0; i < characterNames.length; i++) {
+			const characterName = characterNames[i];
+			characterData[characterName] = await Character.findOne({
+				where: { characterName, mediaId },
+			});
+		}
 
-	characterIds
-		? resolve({ ...result, characterIds })
-		: reject("error getting character ids");
+		await transaction.commit();
+		resolve({ ...result, characterData });
+	} catch (error) {
+		await transaction.rollback();
+		reject("error getting character data");
+		console.error("Error during bulk character find:", error);
+	}
 };
+
 // process the actors
-const processFileActors = async (result, resolve, reject) => {
+const processActors = async (result, resolve, reject) => {
 	const { mediaName, data } = result;
 	let actorPosterUrl,
 		actorPosterAlt = "";
@@ -407,41 +337,94 @@ const processFileActors = async (result, resolve, reject) => {
 			console.log("Actors have been inserted");
 
 			// return results
-			resolve({ ...result, actorResults });
+			// resolve({ ...result, actorResults });
+			resolve(result);
 		})
 		.catch((err) => {
 			console.error("Failed to insert actors", err);
 			reject("error creating actors");
 		});
 };
-// process the actorsToCharacters
-const processFileActorsToCharacters = async (result, resolve, reject) => {
-	const { data, actorIds, characterIds } = result;
+// get the actor ids
+const getActorData = async (result, resolve, reject) => {
+	const { data, mediaId } = result;
+	const transaction = await sequelize.transaction();
+	const dataObj = Object.entries(data);
 
-	// create actor-to-character inserts
-	const actorToCharacterInserts = [];
-	Object.entries(data).forEach(([characterName, actors]) => {
-		actors.forEach((actor) =>
-			actorToCharacterInserts.push({
-				ActorId: actorIds[actor.actorName],
-				CharacterId: characterIds[characterName],
-			})
-		);
+	try {
+		const actorData = {};
+
+		for (var i = 0; i < dataObj.length; i++) {
+			const characterName = dataObj[i][0];
+			const characterActors = dataObj[i][1];
+			for (var j = 0; j < characterActors.length; j++) {
+				const { actorName } = characterActors[j];
+
+				actorData[actorName] = await Actor.findOne({
+					where: { actorName },
+				});
+			}
+		}
+
+		await transaction.commit();
+		resolve({ ...result, actorData });
+	} catch (error) {
+		await transaction.rollback();
+		reject("error getting actor data");
+		console.error("Error during bulk actor find:", error);
+	}
+};
+
+// process the actorsToCharacters
+const processActorsToCharacters = async (result, resolve, reject) => {
+	const { data, characterData, actorData } = result;
+
+	// customer.addProducts(product)
+
+	Object.entries(data).forEach(([characterName, characterActors]) => {
+		const character = characterData[characterName];
+		characterActors.forEach(({ actorName }) => {
+			const actor = actorData[actorName];
+
+			// console.log("character: ", character, "\nactor: ", actor);
+
+			// add here
+			character.addActor(actor);
+
+			//sql: "INSERT INTO `ActorToCharacters` (`id`,`createdAt`,`updatedAt`,`CharacterId`,`ActorId`)
+			//	VALUES (NULL,'2024-07-06 17:48:11.363 +00:00','2024-07-06 17:48:11.363 +00:00',1,3);"
+		});
 	});
 
-	// bulk insert...relationships
-	await ActorToCharacter.bulkCreate(actorToCharacterInserts, {
-		ignoreDuplicates: true,
-	})
-		.then((actorToCharacterResults) => {
-			console.log("ActorsToCharacters have been inserted");
+	// //
 
-			resolve({ ...result, actorIds, actorToCharacterResults });
-		})
-		.catch((err) => {
-			console.error("Failed to insert actors", err);
-			reject("error creating media and actors");
-		});
+	// cannot bulk insert:
+
+	// // create actor-to-character inserts
+	// const actorToCharacterInserts = [];
+	// Object.entries(data).forEach(([characterName, actors]) => {
+	// 	actors.forEach((actor) =>
+	// 		actorToCharacterInserts.push({
+	// 			ActorId: actorIds[actor.actorName],
+	// 			CharacterId: characterIds[characterName],
+	// 		})
+	// 	);
+	// });
+
+	// // bulk insert...relationships
+	// await ActorToCharacter.bulkCreate(actorToCharacterInserts, {
+	// 	ignoreDuplicates: true,
+	// })
+	// 	.then((actorToCharacterResults) => {
+	// 		console.log("ActorsToCharacters have been inserted");
+
+	// 		resolve({ ...result, actorIds, actorToCharacterResults });
+	// 	})
+	// 	.catch((err) => {
+	// 		console.error("Failed to insert actors", err);
+	// 		reject("error creating media and actors");
+	// 	});
+	resolve(result);
 };
 // process the characters
 const processFileCharactersETC = async (result, resolve, reject) => {
@@ -455,10 +438,10 @@ const processFileCharactersETC = async (result, resolve, reject) => {
 	const characters = Object.entries(data).map(
 		async ([characterName, actors]) => {
 			const actorsResult = actors.map(async ({ actorName }) => {
-				return await Actor.create(
+				const actor = await Actor.create(
 					{
 						actorName,
-						Characters: [
+						character: [
 							{
 								characterName,
 								mediaId,
@@ -471,6 +454,8 @@ const processFileCharactersETC = async (result, resolve, reject) => {
 						returning: true,
 					}
 				);
+				console.log("add actor: ", actor);
+				return actor;
 			});
 
 			const charactersResult = await Character.create(
@@ -480,7 +465,7 @@ const processFileCharactersETC = async (result, resolve, reject) => {
 					characterPosterUrl,
 					characterPosterAlt,
 					key: getKey(mediaId, characterName),
-					Actors: actors.map(({ actorName }) => {
+					Actor: actors.map(({ actorName }) => {
 						actorName;
 					}),
 				},
@@ -489,6 +474,9 @@ const processFileCharactersETC = async (result, resolve, reject) => {
 					returning: true,
 				}
 			);
+			console.log("add character: ", charactersResult);
+			// const charactersResult = {};
+
 			return { actorsResult, charactersResult };
 		}
 	);

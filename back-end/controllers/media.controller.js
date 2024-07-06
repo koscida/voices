@@ -22,22 +22,22 @@ const { sequelize } = require("../server/db");
 module.exports = {
 	// post
 	post: async (req, res) => {
-		baseController.post(Media, req, res);
+		baseController.post(Media, "mediaName", req, res);
 	},
 
 	// get
 	get: async (req, res) => {
-		baseController.get(Media, req, res);
+		baseController.get(Media, "mediaName", req, res);
 	},
 
 	// put
 	put: async (req, res) => {
-		baseController.put(Media, req, res);
+		baseController.put(Media, "mediaName", req, res);
 	},
 
 	// delete
 	delete: async (req, res) => {
-		baseController.delete(Media, req, res);
+		baseController.delete(Media, "mediaName", req, res);
 	},
 
 	// functions

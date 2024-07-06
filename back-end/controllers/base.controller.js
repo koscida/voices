@@ -12,11 +12,11 @@ const {
 
 module.exports = {
 	// post
-	post: async (Model, req, res) => {
-		const { name } = req.body;
+	post: async (Model, nameLabel, req, res) => {
+		const name = req.body.nameLabel;
 
 		// get
-		const single = await Model.findOne({ where: { name } });
+		const single = await Model.findOne({ where: { [nameLabel]: name } });
 
 		// if exists, error
 		if (single) {
@@ -35,16 +35,16 @@ module.exports = {
 	},
 
 	// get
-	get: async (Model, req, res) => {
+	get: async (Model, nameLabel, req, res) => {
 		const { id } = req.params;
-		const { name } = req.body;
+		const name = req.body[nameLabel];
 
 		// get
 		const data = id
-			? await Model.findOne({ where: { name } })
+			? await Model.findOne({ where: { [nameLabel]: name } })
 			: name
 			? await Model.findOne({ where: { id } })
-			: await Model.findAll({ order: [["name", "ASC"]] });
+			: await Model.findAll({ order: [[nameLabel, "ASC"]] });
 
 		// return
 		data ? jsonSuccess(res, data) : jsonErrorDoesNotExist(res, name ?? id);
@@ -52,13 +52,13 @@ module.exports = {
 	},
 
 	// put
-	put: async (Model, req, res) => {
+	put: async (Model, nameLabel, req, res) => {
 		const { id } = req.params;
-		const { name } = req.body;
+		const name = req.body.nameLabel;
 
 		// get
 		const single = name
-			? await Model.findOne({ where: { name } })
+			? await Model.findOne({ where: { [nameLabel]: name } })
 			: await Model.findOne({ where: { id } });
 
 		// if does not exist, error
@@ -69,13 +69,13 @@ module.exports = {
 
 		// update
 		const isUpdated = name
-			? Model.findOne({ where: { name } })
+			? Model.findOne({ where: { [nameLabel]: name } })
 			: Model.findOne({ where: { id } });
 
 		// if updated get data
 		const data = isUpdated
 			? name
-				? await Model.findOne({ where: { name } })
+				? await Model.findOne({ where: { [nameLabel]: name } })
 				: await Model.findOne({ where: { id } })
 			: 0;
 
@@ -87,13 +87,13 @@ module.exports = {
 	},
 
 	// delete
-	delete: async (Model, req, res) => {
+	delete: async (Model, nameLabel, req, res) => {
 		const { id } = req.params;
-		const { name } = req.body;
+		const name = req.body.nameLabel;
 
 		// get
 		const single = name
-			? await Model.findOne({ where: { name } })
+			? await Model.findOne({ where: { [nameLabel]: name } })
 			: await Model.findOne({ where: { id } });
 
 		// if does not exist, error
@@ -104,7 +104,7 @@ module.exports = {
 
 		// delete
 		const isDeleted = name
-			? await Model.destroy({ where: { name } })
+			? await Model.destroy({ where: { [nameLabel]: name } })
 			: await Model.destroy({ where: { id } });
 
 		// if deleted return the last known
@@ -116,6 +116,8 @@ module.exports = {
 			: jsonError(res, `Error: deleting ${name ?? id}`);
 		return;
 	},
+
+	//
 
 	// post with parent
 	postWithParent: async (ChildModel, ParentModel, parentKey, req, res) => {

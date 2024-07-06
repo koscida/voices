@@ -1,10 +1,10 @@
 const { rejects } = require("node:assert");
 const fs = require("node:fs");
 
+const fileRootPath = "./data/";
+
 module.exports = {
 	loadAll: async (req, res) => {
-		const fileRootPath = "./data/";
-
 		// ////
 		// create file promise
 		const filePromise = new Promise(async (resolve, reject) => {
@@ -21,6 +21,10 @@ module.exports = {
 
 		//res.json({ message: "Hello from server!" });
 		return;
+	},
+	loadOne: async (req, res) => {
+		const { fileName } = req.params;
+		console.log("fileName: ", fileName);
 	},
 };
 
