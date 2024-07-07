@@ -240,8 +240,18 @@ const readMediaFile = async (fileName, resolve, reject) => {
 const processMedia = async (result, resolve, reject) => {
 	const { mediaName, data } = result;
 
-	// create media
-	const media = await getOrCreateMedia(mediaName);
+	// check if character exists
+	let media = await Media.findOne({
+		where: {
+			mediaName,
+		},
+	});
+	// if does not exist, create the character
+	if (!media) {
+		media = await Media.create({
+			mediaName,
+		});
+	}
 
 	// return
 	if (media) {
@@ -280,11 +290,6 @@ const processCharacters = async (result, resolve, reject) => {
 		.then(async (charactersResult) => {
 			console.log("Characters have been inserted");
 
-			// return results
-			// resolve({
-			// 	...result,
-			// 	charactersResult,
-			// });
 			resolve(result);
 		})
 		.catch((err) => {
@@ -397,165 +402,5 @@ const processActorsToCharacters = async (result, resolve, reject) => {
 		});
 	});
 
-	// //
-
-	// cannot bulk insert:
-
-	// // create actor-to-character inserts
-	// const actorToCharacterInserts = [];
-	// Object.entries(data).forEach(([characterName, actors]) => {
-	// 	actors.forEach((actor) =>
-	// 		actorToCharacterInserts.push({
-	// 			ActorId: actorIds[actor.actorName],
-	// 			CharacterId: characterIds[characterName],
-	// 		})
-	// 	);
-	// });
-
-	// // bulk insert...relationships
-	// await ActorToCharacter.bulkCreate(actorToCharacterInserts, {
-	// 	ignoreDuplicates: true,
-	// })
-	// 	.then((actorToCharacterResults) => {
-	// 		console.log("ActorsToCharacters have been inserted");
-
-	// 		resolve({ ...result, actorIds, actorToCharacterResults });
-	// 	})
-	// 	.catch((err) => {
-	// 		console.error("Failed to insert actors", err);
-	// 		reject("error creating media and actors");
-	// 	});
 	resolve(result);
-};
-// process the characters
-const processFileCharactersETC = async (result, resolve, reject) => {
-	const { mediaId, data } = result;
-	let characterPosterUrl,
-		characterPosterAlt,
-		actorPosterUrl,
-		actorPosterAlt = "";
-
-	// create actor inserts
-	const characters = Object.entries(data).map(
-		async ([characterName, actors]) => {
-			const actorsResult = actors.map(async ({ actorName }) => {
-				const actor = await Actor.create(
-					{
-						actorName,
-						character: [
-							{
-								characterName,
-								mediaId,
-								key: getKey(mediaId, characterName),
-							},
-						],
-					},
-					{
-						ignoreDuplicates: true,
-						returning: true,
-					}
-				);
-				console.log("add actor: ", actor);
-				return actor;
-			});
-
-			const charactersResult = await Character.create(
-				{
-					characterName,
-					mediaId,
-					characterPosterUrl,
-					characterPosterAlt,
-					key: getKey(mediaId, characterName),
-					Actor: actors.map(({ actorName }) => {
-						actorName;
-					}),
-				},
-				{
-					ignoreDuplicates: true,
-					returning: true,
-				}
-			);
-			console.log("add character: ", charactersResult);
-			// const charactersResult = {};
-
-			return { actorsResult, charactersResult };
-		}
-	);
-
-	characters
-		? resolve(characters)
-		: reject("error creating characters and actors");
-};
-
-//
-
-const getOrCreateMedia = async (mediaName) => {
-	// check if character exists
-	let media = await Media.findOne({
-		where: {
-			mediaName,
-		},
-	});
-	// if does not exist, create the character
-	if (!media) {
-		media = await Media.create({
-			mediaName,
-		});
-	}
-
-	return media;
-};
-
-const getOrCreateCharacter = async (characterName, mediaId) => {
-	// check if character exists
-	let character = await Character.findOne({
-		where: {
-			characterName,
-			mediaId,
-		},
-	});
-	// if does not exist, create the character
-	if (!character) {
-		character = await Character.create({
-			characterName,
-			mediaId,
-		});
-	}
-
-	return character;
-};
-
-const getOrCreateActor = async (actorName) => {
-	// check if actor exists
-	let actor = await Actor.findOne({
-		where: {
-			actorName,
-		},
-	});
-	// if does not exist, create one
-	if (!actor) {
-		actor = await Actor.create({
-			actorName,
-		});
-	}
-	return actor;
-};
-
-const getOrCreateActorCharacter = async (actorId, characterId) => {
-	// check if already added actor-character
-	let actorToCharacter = await ActorToCharacter.findOne({
-		where: {
-			ActorId: actorId,
-			CharacterId: characterId,
-		},
-	});
-	// if does not exist, create one
-	if (!actorToCharacter) {
-		// add actor-character connection
-		actorToCharacter = await ActorToCharacter.create({
-			ActorId: actorId,
-			CharacterId: characterId,
-		});
-	}
-	return actorToCharacter;
 };
