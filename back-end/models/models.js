@@ -85,6 +85,18 @@ const ActorToCharacter = sequelize.define("ActorToCharacters", {
 		autoIncrement: true,
 		primaryKey: true,
 	},
+	episodes: {
+		type: DataTypes.INTEGER,
+		defaultValue: null,
+	},
+	yearStart: {
+		type: DataTypes.INTEGER,
+		defaultValue: null,
+	},
+	yearEnd: {
+		type: DataTypes.INTEGER,
+		defaultValue: null,
+	},
 });
 exports.ActorToCharacter = ActorToCharacter;
 

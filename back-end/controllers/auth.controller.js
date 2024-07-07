@@ -63,10 +63,10 @@ module.exports = {
 
 			const testFileName = "ac_copy.txt";
 			// get all files
-			// files = [testFileName];
+			files = [testFileName];
 			files.forEach((fileName) => {
 				console.log("------\nfileName: ", fileName);
-				if (fileName === testFileName) return;
+				if (files.length > 1 && fileName === testFileName) return;
 
 				// ////
 				// create promises
@@ -192,14 +192,16 @@ const readMediaFile = async (fileName, resolve, reject) => {
 			// get episodes and year
 			const episodeYears = episodeYear.split(",").map((c) => c.trim());
 			const episodesTotal = episodeYears[0]
-				? episodeYears[0]
-						.replace(" ", "")
-						.replace("episode", "")
-						.replace("s", "")
+				? parseInt(
+						episodeYears[0]
+							.replace(" ", "")
+							.replace("episode", "")
+							.replace("s", "")
+				  )
 				: 0;
 			const years =
 				episodeYears.length > 1 && episodeYears[1]
-					? episodeYears[1].split("-").map((c) => c.trim())
+					? episodeYears[1].split("-").map((c) => parseInt(c.trim()))
 					: 0;
 
 			// create actor blurb
@@ -385,20 +387,24 @@ const getActorData = async (result, resolve, reject) => {
 const processActorsToCharacters = async (result, resolve, reject) => {
 	const { data, characterData, actorData } = result;
 
-	// customer.addProducts(product)
-
 	Object.entries(data).forEach(([characterName, characterActors]) => {
 		const character = characterData[characterName];
-		characterActors.forEach(({ actorName }) => {
+		characterActors.forEach(async ({ actorName, episodesTotal, years }) => {
 			const actor = actorData[actorName];
 
-			// console.log("character: ", character, "\nactor: ", actor);
+			// create relationship
+			const res = await character.addActor(actor);
 
-			// add here
-			character.addActor(actor);
+			// add other info
+			const updates = res[0].dataValues;
+			if (episodesTotal) updates.episodes = episodesTotal;
+			if (years[0]) updates.yearStart = years[0];
+			if (years.length > 1) updates.yearEnd = years[1];
 
-			//sql: "INSERT INTO `ActorToCharacters` (`id`,`createdAt`,`updatedAt`,`CharacterId`,`ActorId`)
-			//	VALUES (NULL,'2024-07-06 17:48:11.363 +00:00','2024-07-06 17:48:11.363 +00:00',1,3);"
+			// save
+			const res2 = await ActorToCharacter.update(updates, {
+				where: { id: updates.id },
+			});
 		});
 	});
 
