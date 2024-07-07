@@ -40,10 +40,12 @@ module.exports = {
 		const name = req.body[nameLabel];
 
 		// get
-		const data = id
+		const data = name
 			? await Model.findOne({ where: { [nameLabel]: name } })
-			: name
-			? await Model.findOne({ where: { id } })
+			: id
+			? await Model.findOne({
+					where: { id },
+			  })
 			: await Model.findAll({ order: [[nameLabel, "ASC"]] });
 
 		// return

@@ -38,4 +38,6 @@ module.exports = {
 			message: `Error: does not exist ${key}`,
 		});
 	},
+
+	getKey: (id, name) => btoa(`${id}:${name}`),
 };

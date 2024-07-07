@@ -5,9 +5,14 @@ const {
 	Actor,
 	ActorToCharacter,
 } = require("../models/models");
+const { getKey } = require("./functions");
 const { sequelize } = require("../server/db");
 const fs = require("node:fs");
 
+const promiseErr = (err) => {
+	console.log(err);
+	return;
+};
 module.exports = {
 	homeView: async (req, res) => {
 		res.json({ message: "Hello from server!" });
@@ -56,10 +61,12 @@ module.exports = {
 				return;
 			}
 
+			const testFileName = "ac_copy.txt";
 			// get all files
-			// files = ["ac_copy.txt"];
+			// files = [testFileName];
 			files.forEach((fileName) => {
 				console.log("------\nfileName: ", fileName);
+				if (fileName === testFileName) return;
 
 				// ////
 				// create promises
@@ -122,12 +129,6 @@ module.exports = {
 		return;
 	},
 };
-
-const promiseErr = (err) => {
-	console.log(err);
-	return;
-};
-const getKey = (mediaId, characterName) => btoa(`${mediaId}:${characterName}`);
 
 // read the file
 const readMediaFile = async (fileName, resolve, reject) => {
